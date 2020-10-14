@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS weather(
+	timestamp timestamptz NOT NULL PRIMARY KEY,
+	rawMessage VARCHAR(100),
+	textDescription VARCHAR(40),
+	temperature numeric,
+	dewpoint numeric,
+	windDirection VARCHAR(40),
+	windSpeed numeric,
+	windGust VARCHAR(40),
+	barometricPressure numeric,
+	seaLevelPressure numeric,
+	visibility numeric,
+	maxTemperatureLast24Hours numeric,
+	minTemperatureLast24Hours numeric,
+	precipitationLastHour numeric,
+	precipitationLast3Hours numeric,
+	precipitationLast6Hours numeric,
+	relativeHumidity numeric,
+	windChill numeric,
+	heatIndex numeric
+)
