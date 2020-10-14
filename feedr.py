@@ -6,7 +6,7 @@ import json
 import time
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config.ini') # This file is not included in this repo for security reason.
 # print(config.sections()) # ['postgres']
 
 connection = psycopg.connect(
