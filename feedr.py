@@ -1,3 +1,5 @@
+#!/usr/local/bin/python3
+
 import os
 import psycopg2 as psycopg
 import configparser
@@ -24,7 +26,7 @@ cursor.execute(code)
 connection.commit() # thought it was cursor.commit()...
 
 def weather_api_connect(max_attempt):
-	url = 'https://api.weather.gov/stations/KCHO/observations?limit=10'
+	url = 'https://api.weather.gov/stations/KCHO/observations?limit=24'
 	attempt = 0
 	while attempt < max_attempt:
 		response = requests.get(url)
@@ -41,34 +43,40 @@ def weather_api_connect(max_attempt):
 
 j = weather_api_connect(5)
 
-latest_weather = j['features'][0]['properties']
-keys = list(latest_weather.keys())
+# latest_weather = j['features'][0]['properties']
+latest_weathers = [k['properties'] for k in j['features']]
+
+for latest_weather in latest_weathers:
+
+# keys = list(latest_weather.keys())
 # print(list(keys[4:]))
 # print([type(j['features'][0]['properties'][key]) for key in keys[4:]])
 
-text_properties = ['timestamp', 'rawMessage', 'textDescription'] # no need for 'icon'
-dict_properties = ['temperature', 'dewpoint', 'windDirection', 
-					'windSpeed', 'windGust', 'barometricPressure', 'seaLevelPressure', 
-					'visibility', 'maxTemperatureLast24Hours', 'minTemperatureLast24Hours', 
-					'precipitationLastHour', 'precipitationLast3Hours', 'precipitationLast6Hours', 
-					'relativeHumidity', 'windChill', 'heatIndex']
+	text_properties = ['timestamp', 'rawMessage', 'textDescription'] # no need for 'icon'
+	dict_properties = ['temperature', 'dewpoint', 'windDirection', 
+						'windSpeed', 'windGust', 'barometricPressure', 'seaLevelPressure', 
+						'visibility', 'maxTemperatureLast24Hours', 'minTemperatureLast24Hours', 
+						'precipitationLastHour', 'precipitationLast3Hours', 'precipitationLast6Hours', 
+						'relativeHumidity', 'windChill', 'heatIndex']
 
-output = []
+	output = []
 
-for i in text_properties:
-	output.append(latest_weather[i])
+	for i in text_properties:
+		output.append(latest_weather[i])
 
-for j in dict_properties:
-	output.append(latest_weather[j].get('value'))
+	for j in dict_properties:
+		output.append(latest_weather[j].get('value'))
 
-columns = ','.join(text_properties+dict_properties)
-values = str(tuple(output)).replace('None','NULL')
+	columns = ','.join(text_properties+dict_properties)
+	values = str(tuple(output)).replace('None','NULL')
 
-insertion = 'INSERT INTO weather ({}) VALUES {} ON CONFLICT DO NOTHING'.format(columns, values)
-try:
-	cursor.execute(insertion)
-except:
-	print('Error. Key already exists?')
-connection.commit()
+	insertion = 'INSERT INTO weather ({}) VALUES {} ON CONFLICT DO UPDATE'.format(columns, values)
 
+	try:
+		cursor.execute(insertion)
+	except:
+		print('Error. Key already exists?')
+	connection.commit()
+
+# textdescription, temperature , dewpoint , winddirection , windspeed , windgust , barometricpressure , sealevelpressure, visibility
 

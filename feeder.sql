@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS weather(
 	timestamp timestamptz NOT NULL PRIMARY KEY,
-	rawMessage VARCHAR(100),
+	rawMessage VARCHAR(100) NOT NULL,
 	textDescription VARCHAR(40),
-	temperature numeric,
+	temperature numeric NOT NULL,
 	dewpoint numeric,
 	windDirection VARCHAR(40),
 	windSpeed numeric,
